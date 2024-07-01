@@ -1,4 +1,4 @@
--- Удаление всех таблиц
-DROP TABLE IF EXISTS table1;
-DROP TABLE IF EXISTS table2;
--- Добавьте другие таблицы, если необходимо
+DROP TABLE IF EXISTS Tasks;
+
+-- Удаление таблицы Users
+DROP TABLE IF EXISTS Users;
