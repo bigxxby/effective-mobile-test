@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS Tasks;
-
--- Удаление таблицы Users
-DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS task_logs;
+DROP TABLE IF EXISTS tasks;
+DROP TABLE IF EXISTS users;

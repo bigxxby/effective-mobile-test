@@ -1,0 +1,323 @@
+definitions:
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.OKresponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.ResponseTasksList:
+    properties:
+      tasks:
+        items:
+          $ref: '#/definitions/models.Task'
+        type: array
+    type: object
+  models.ResponseUsersList:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
+  models.Task:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.User:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      passport_number:
+        type: string
+      surname:
+        type: string
+    required:
+    - name
+    - surname
+    type: object
+  models.UserData:
+    properties:
+      passport_number:
+        type: string
+    required:
+    - passport_number
+    type: object
+  models.UserUpdate:
+    properties:
+      name:
+        type: string
+      surname:
+        type: string
+    required:
+    - name
+    - surname
+    type: object
+info:
+  contact: {}
+paths:
+  /api/tasks:
+    get:
+      description: Retrieves all tasks.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with tasks
+          schema:
+            $ref: '#/definitions/models.ResponseTasksList'
+        "404":
+          description: Tasks not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all tasks.
+  /api/users:
+    get:
+      description: Retrieves a list of users based on optional filters, paginated
+        results, and sorting criteria.
+      parameters:
+      - description: Passport number to filter users
+        in: query
+        name: passport_number
+        type: string
+      - description: Surname to filter users
+        in: query
+        name: surname
+        type: string
+      - description: Name to filter users
+        in: query
+        name: name
+        type: string
+      - description: Page number for pagination (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Number of users per page (default 10)
+        in: query
+        name: page_size
+        type: integer
+      - description: Field to sort by (default 'id')
+        in: query
+        name: sort_by
+        type: string
+      - description: Sort order, either 'asc' or 'desc' (default 'asc')
+        in: query
+        name: sort_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with list of users
+          schema:
+            $ref: '#/definitions/models.ResponseUsersList'
+        "404":
+          description: Users not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get users with optional filtering, pagination, and sorting.
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user with the provided data.
+      parameters:
+      - description: User data to create
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/models.OKresponse'
+        "400":
+          description: Invalid request body or user already exists
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new user.
+  /api/users/{id}:
+    delete:
+      description: Deletes a user by their ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            $ref: '#/definitions/models.OKresponse'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a user by ID.
+    get:
+      description: Retrieves a user by their ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with user details
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get a user by ID.
+    put:
+      consumes:
+      - application/json
+      description: Updates a user with the provided data.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated user data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            $ref: '#/definitions/models.OKresponse'
+        "400":
+          description: Invalid user ID or request body
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update a user by ID.
+  /api/users/{id}/tasks/{taskId}/start:
+    post:
+      description: Starts a task for a user by their IDs.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task started successfully
+          schema:
+            $ref: '#/definitions/models.OKresponse'
+        "400":
+          description: Invalid user ID or task ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User or task not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Start a task for a user by ID and task ID.
+  /api/users/{id}/tasks/{taskId}/stop:
+    post:
+      description: Ends a task for a user by their IDs.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task ended successfully
+          schema:
+            $ref: '#/definitions/models.OKresponse'
+        "400":
+          description: Invalid user ID or task ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User or task not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: End a task for a user by ID and task ID.
+swagger: "2.0"
